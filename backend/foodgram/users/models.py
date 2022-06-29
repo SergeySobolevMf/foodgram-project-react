@@ -2,23 +2,18 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class User(AbstractUser):
+class CustomUser(AbstractUser):
     USER = 'User'
-    MODERATOR = 'Moderator'
     ADMIN = 'Admin'
-    USER_ROLE = ((USER, 'User'), (MODERATOR, 'Moderator'), (ADMIN, 'Admin'))
+    USER_ROLE = ((USER, 'User'), (ADMIN, 'Admin'))
+    login = models.CharField(max_length=150,
+                             unique=True)
     email = models.EmailField(
         unique=True,
         verbose_name='Электронная почта',
     )
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    username = models.CharField(max_length=150,
-                                unique=True)
-    bio = models.TextField(
-        verbose_name='О себе',
-        blank=True,
-    )
     role = models.CharField(
         verbose_name='Роль',
         max_length=100,
@@ -40,13 +35,13 @@ class User(AbstractUser):
 
 class Follow(models.Model):
     user = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='follower',
         verbose_name='Подписчик'
     )
     author = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.CASCADE,
         related_name='following',
         verbose_name='Автор'

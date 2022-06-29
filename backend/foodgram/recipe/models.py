@@ -29,10 +29,7 @@ class Tag(models.Model):
 class Ingridient(models.Model):
     name_ing = models.CharField(
         max_length=100,
-        verbose_name = 'Название ингредиента'
-    )
-    amount = models.FloatField(
-        verbose_name='Количество'
+        verbose_name='Название ингредиента'
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
@@ -47,7 +44,7 @@ class Ingridient(models.Model):
 
 class Recipe(models.Model):
     author = models.ForeignKey(
-        User, 
+        User,
         on_delete=models.CASCADE
     )
     title = models.CharField(max_length=100)
@@ -96,7 +93,6 @@ class IngredientAmount(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество ингредиентов',
         default=1,
-        validators=[MinValueValidator(1), ]
     )
 
     class Meta:
@@ -119,10 +115,10 @@ class FavoriteRecipe(models.Model):
         related_name='favorites',
     )
     date_added = models.DateTimeField(
-        auto_now_add=True, 
+        auto_now_add=True,
         verbose_name='Дата добавления'
     )
-    
+
     class Meta:
         verbose_name = 'Избранные'
         constraints = [
