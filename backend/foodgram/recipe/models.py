@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -77,7 +76,7 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
 
 
-class IngredientAmount(models.Model):
+class IngridientAmount(models.Model):
     ingridient = models.ForeignKey(
         Ingridient,
         on_delete=models.CASCADE,
@@ -141,7 +140,7 @@ class ShoppingList(models.Model):
         verbose_name='Покупка'
     )
     date_added = models.DateTimeField(
-        auto_now_add=True, 
+        auto_now_add=True,
         verbose_name='Дата добавления в корзину'
     )
 
