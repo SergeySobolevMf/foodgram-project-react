@@ -2,13 +2,14 @@ version: '3.3'
 services:
   db:
     image: postgres:13.0-alpine
+    restart: always
     volumes:
-      - /var/lib/postgresql/data/
+      - postgres:/var/lib/postgresql/data/
     env_file:
       - ./.env
 
   backend:
-    image: sergeymf20222/foodgram-project-react:latest
+    image: sergeymf20222/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -38,9 +39,13 @@ services:
       - static_value:/var/html/static/
       - media_value:/var/html/media/
     depends_on:
+      - backend
       - frontend
+    env_file:
+      - ./.env      
 
 volumes:
-  db:
+  frontend:
+  postgres:
   static_value:
   media_value:
