@@ -61,6 +61,13 @@ REST_FRAMEWORK = {
 }
 
 
+EMAIL_HOST = 'localhost'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'emailfolder')
+DEFAULT_FROM_EMAIL = 'confirmation@yamdb.com'
+ROOT_URLCONF = 'foodgram.urls'
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

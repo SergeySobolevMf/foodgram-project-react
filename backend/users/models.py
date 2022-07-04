@@ -6,8 +6,8 @@ class CustomUser(AbstractUser):
     USER = 'User'
     ADMIN = 'Admin'
     USER_ROLE = ((USER, 'User'), (ADMIN, 'Admin'))
-    login = models.CharField(max_length=150,
-                             unique=True)
+    username = models.CharField(max_length=150,
+                                unique=True)
     email = models.EmailField(
         unique=True,
         verbose_name='Электронная почта',

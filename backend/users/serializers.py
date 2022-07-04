@@ -7,14 +7,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=CustomUser
-        fields = ('first_name', 'last_name', 'login', 'email',)
+        fields = ('first_name', 'last_name', 'username', 'email',)
 
 
 class CumstomUserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'login', 'email',)
+        fields = ('first_name', 'last_name', 'username', 'email',)
 
 
 class FollowSerializer(serializers.ModelSerializer):

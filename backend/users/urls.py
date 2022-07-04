@@ -9,8 +9,8 @@ router = DefaultRouter()
 
 
 router.register('users', CustomUserList, basename='users')
-router.register('signup', SignUp, basename='signup')
 
 urlpatterns = [
+    path('api/signup/', SignUp.as_view(), name='signup'),
     path('api/', include(router.urls)),
 ]

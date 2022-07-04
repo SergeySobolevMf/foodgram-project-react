@@ -25,13 +25,17 @@ class SignUp(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = CumstomUserCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        first_name = serializer.validated_data.get('first_name')
+        last_name = serializer.validated_data.get('last_name')
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
         CustomUser.objects.create(
+            first_name=first_name,
+            last_name=last_name,
             username=username,
-            email=email
+            email=email,
         )
         confirmation_code = uuid.uuid4()
         subject = 'Подтверждение регистрации'
