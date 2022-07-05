@@ -1,13 +1,13 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import CustomUserList
+from .views import CustomUserList, MyLoginView
 
 router = DefaultRouter()
 
 router.register('users', CustomUserList, basename='users')
 
 urlpatterns = [
-    path('api/auth/token/', include('rest_auth.urls')),
+    path('api/auth/token/login/', MyLoginView.as_view(), name="get_token"),
     path('api/', include(router.urls)),
 ]

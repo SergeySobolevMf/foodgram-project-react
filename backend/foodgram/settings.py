@@ -35,9 +35,9 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
 ]
-
+REST_AUTH_SERIALIZERS = {'LOGIN_SERIALIZER': 'users.serializers.CustomLoginSerializer'}
+SITE_ID=1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

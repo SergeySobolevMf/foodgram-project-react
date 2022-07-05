@@ -4,11 +4,13 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_auth.views import LoginView
 
 from .models import CustomUser, Follow
 from .serializers import (CumstomUserCreateSerializer,
                           CustomUserSerializer,
-                          FollowSerializer)
+                          FollowSerializer,
+                          MyTokenSerializer)
 
 
 class CustomUserList(viewsets.ModelViewSet):
@@ -56,6 +58,10 @@ class CustomUserList(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
+
+class MyLoginView(LoginView):
+    def get_response_serializer(self):
+        return MyTokenSerializer
 
 class FollowList(viewsets.ModelViewSet):
     queryset = Follow.objects.all()
