@@ -1,52 +1,60 @@
-import uuid
-
+from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
-from django.core.mail import send_mail
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from rest_framework.views import APIView
 
-from .models import Follow, CustomUser
-from .serializers import (FollowSerializer,
+from .models import CustomUser, Follow
+from .serializers import (CumstomUserCreateSerializer,
                           CustomUserSerializer,
-                          CumstomUserCreateSerializer)
-from foodgram.settings import DEFAULT_FROM_EMAIL
+                          FollowSerializer)
 
 
 class CustomUserList(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
+    pagination_class = PageNumberPagination
 
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CumstomUserCreateSerializer
+        return CustomUserSerializer
 
-class SignUp(APIView):
-    serializer_class = CumstomUserCreateSerializer
-    permission_classes = (AllowAny,)
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='me',
+    )
+    def users_profile(self, request):
+        user = get_object_or_404(
+            CustomUser,
+            username=request.user.username
+        )
+        serializer = self.get_serializer(user)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
-    def post(self, request, *args, **kwargs):
-        serializer = CumstomUserCreateSerializer(data=request.data)
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         first_name = serializer.validated_data.get('first_name')
         last_name = serializer.validated_data.get('last_name')
         username = serializer.validated_data.get('username')
         email = serializer.validated_data.get('email')
-        CustomUser.objects.create(
+        user = CustomUser.objects.create(
             first_name=first_name,
             last_name=last_name,
             username=username,
             email=email,
         )
-        confirmation_code = uuid.uuid4()
-        subject = 'Подтверждение регистрации'
-
-        send_mail(
-            subject=subject,
-            message=(f'{subject} '
-                     f'\nВаш confirmation_code: {confirmation_code}'),
-            from_email=DEFAULT_FROM_EMAIL,
-            recipient_list=[email])
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        user.set_password(serializer.validated_data.get('password'))
+        user.save()
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
 
 class FollowList(viewsets.ModelViewSet):

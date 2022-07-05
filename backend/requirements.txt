@@ -13,3 +13,5 @@ pytest==6.2.4
 pytest-django==4.4.0
 pytest-pythonpath==0.7.3
 Pillow==9.1.1
+django-rest-auth==0.9.5
+django-allauth==0.51.0
