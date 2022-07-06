@@ -1,3 +1,4 @@
+from pkg_resources import require
 from rest_framework import serializers
 from rest_auth.models import TokenModel
 from rest_auth.serializers import LoginSerializer
@@ -17,6 +18,14 @@ class CumstomUserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('first_name', 'last_name', 'username', 'email', 'password')
+
+
+class CumstomUserModifySerializer(serializers.ModelSerializer):
+    new_password = serializers.CharField(required=True, max_length=200)
+    current_password = serializers.CharField(source='password')
+    class Meta:
+        model = CustomUser
+        fields = ('new_password', 'current_password',)
 
 
 class CustomLoginSerializer(LoginSerializer):
