@@ -3,13 +3,17 @@ from django_filters import rest_framework as filters
 from .models import Recipe, Ingridient
 
 
-# class RecipeFilter(filters.FilterSet):
-#     tag = CharFilterinFilter(field_name='tags__slug')
+class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
+        pass
 
 
-#     class Meta:
-#         model = Recipe
-#         fields = ['tag']
+class RecipeFilter(filters.FilterSet):
+    tag = CharFilterInFilter(field_name='tags__slug')
+
+
+    class Meta:
+        model = Recipe
+        fields = ['tag']
 
 
 class IngridientNameFilter(filters.FilterSet):

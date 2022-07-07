@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect
-from rest_framework import status, viewsets
+from rest_framework import status, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_auth.views import LoginView
 from django.core.exceptions import ObjectDoesNotExist
-from allauth.account.views import  LogoutView
 
 
 from .models import CustomUser, Follow
@@ -27,6 +26,8 @@ class CustomUserList(viewsets.ModelViewSet):
             return CumstomUserCreateSerializer
         if self.action == 'set_password':
             return CumstomUserModifySerializer
+        if self.action in ['subscribe', 'subscriptions']:
+            return SubscribeSerializer
         return CustomUserSerializer
 
     @action(
@@ -98,15 +99,7 @@ class Logout(APIView):
             return redirect('/api/auth/token/login/')
 
 
-class SetPassword(APIView):
-    
-    def post(self, request, *args, **kwrgs):
-        old_pass = CumstomUserCreateSerializer(data=request.password)
-        new_pass = CumstomUserCreateSerializer(data=request.password)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 class FollowList(viewsets.ModelViewSet):
+
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer

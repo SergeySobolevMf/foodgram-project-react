@@ -23,6 +23,7 @@ class CumstomUserCreateSerializer(serializers.ModelSerializer):
 class CumstomUserModifySerializer(serializers.ModelSerializer):
     new_password = serializers.CharField(required=True, max_length=200)
     current_password = serializers.CharField(source='password')
+
     class Meta:
         model = CustomUser
         fields = ('new_password', 'current_password',)
@@ -45,9 +46,26 @@ class MyTokenSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    email = serializers.ReadOnlyField(source='author.email')
+    id = serializers.ReadOnlyField(source='author.id')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Follow
-        fields = '__all__'
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        )
 
 
