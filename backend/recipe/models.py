@@ -22,7 +22,11 @@ class Tag(models.Model):
     )
 
     class Meta:
+        ordering = ['id']
         verbose_name = 'Тег'
+
+    def __str__(self):
+        return self.name
 
 
 class Ingridient(models.Model):

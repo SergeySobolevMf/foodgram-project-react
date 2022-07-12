@@ -33,9 +33,9 @@ class CustomLoginSerializer(LoginSerializer):
     username = None
 
 
-class MyTokenSerializer(serializers.ModelSerializer):
+class TokenSerializer(serializers.ModelSerializer):
 
-    access_token = serializers.SerializerMethodField()
+    access_token = serializers.CharField(source='key')
 
     class Meta:
         model = TokenModel

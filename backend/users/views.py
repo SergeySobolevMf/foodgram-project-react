@@ -1,3 +1,4 @@
+from urllib import response
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework import status, serializers, viewsets
 from rest_framework.decorators import action
@@ -14,12 +15,17 @@ from .serializers import (CumstomUserCreateSerializer,
                           CumstomUserModifySerializer,
                           CustomUserSerializer,
                           FollowSerializer,
-                          MyTokenSerializer)
+                          TokenSerializer)
 
 
 class CustomUserList(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     pagination_class = PageNumberPagination
+
+    # def get_permissions(self):
+    #     if self.action in ['list', 'create', 'retrieve']:
+    #         permission_classes = [AllowAny]
+    #     return [permission() for permission in permission_classes]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -27,7 +33,7 @@ class CustomUserList(viewsets.ModelViewSet):
         if self.action == 'set_password':
             return CumstomUserModifySerializer
         if self.action in ['subscribe', 'subscriptions']:
-            return SubscribeSerializer
+            return FollowSerializer
         return CustomUserSerializer
 
     @action(
@@ -65,7 +71,6 @@ class CustomUserList(viewsets.ModelViewSet):
             serializer.data,
             status=status.HTTP_200_OK
         )
-    
 
     @action(detail=False, methods=['post'], url_path='set_password')
     def set_password(self, request, pk=None):
@@ -85,9 +90,10 @@ class CustomUserList(viewsets.ModelViewSet):
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
+
 class MyLoginView(LoginView):
     def get_response_serializer(self):
-        return MyTokenSerializer
+        return TokenSerializer
 
 
 class Logout(APIView):

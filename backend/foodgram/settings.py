@@ -30,13 +30,16 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_auth',
     'rest_framework.authtoken',
+    # 'dj_rest_auth',
     'users.apps.UserConfig',
     'recipe.apps.RecipeConfig',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
 ]
-REST_AUTH_SERIALIZERS = {'LOGIN_SERIALIZER': 'users.serializers.CustomLoginSerializer'}
+REST_AUTH_SERIALIZERS = {'TOKEN_SERIALIZER': 'users.serializers.TokenSerializer',
+                         'LOGIN_SERIALIZER': 'users.serializers.CustomLoginSerializer',
+                         }
 SITE_ID=1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,7 +52,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
-
+# REST_USE_JWT = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -57,12 +60,12 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
     # ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework.authentication.TokenAuthentication',
+    # )
 }
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
@@ -111,16 +114,19 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 #     }
 # }
 
+
+
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE'),
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT')
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default='postgres'),
+        'USER': os.getenv('POSTGRES_USER', default='postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+        'HOST': os.getenv('DB_HOST', ),
+        'PORT': os.getenv('DB_PORT', default=5432)
     }
-} 
+}
+
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
