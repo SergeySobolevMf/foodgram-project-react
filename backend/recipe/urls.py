@@ -16,6 +16,6 @@ router.register(r'tags', TagList, basename='tags')
 
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
 ]
 

@@ -1,24 +1,42 @@
-from attr import field
-from django_filters import rest_framework as filters
-from .models import Recipe, Ingridient
+import django_filters as filters
+from django_filters.widgets import BooleanWidget
+
+from .models import Ingridient, Recipe
 
 
-class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
-        pass
-
-
-class RecipeFilter(filters.FilterSet):
-    tag = CharFilterInFilter(field_name='tags__slug')
-
-
-    class Meta:
-        model = Recipe
-        fields = ['tag']
-
-
-class IngridientNameFilter(filters.FilterSet):
-    name_ing = filters.CharFilter(field_name='name_ing', lookup_expr='istartswith')
+class IngredientNameFilter(filters.FilterSet):
+    name = filters.CharFilter(field_name='name', lookup_expr='istartswith')
 
     class Meta:
         model = Ingridient
-        fields = ('name_ing', 'measurement_unit')
+        fields = ('name', 'measurement_unit')
+
+
+class RecipeFilter(filters.FilterSet):
+    tags = filters.AllValuesMultipleFilter(
+        field_name='tags__slug'
+    )
+    is_favorited = filters.BooleanFilter(
+        method='get_favorite',
+        widget=BooleanWidget
+    )
+    is_in_shopping_cart = filters.BooleanFilter(
+        method='get_is_in_shopping_cart',
+        widget=BooleanWidget
+    )
+
+    class Meta:
+        model = Recipe
+        fields = ('is_favorited', 'is_in_shopping_cart', 'author', 'tags')
+
+    def get_favorite(self, queryset, name, value):
+        user = self.request.user
+        if value:
+            return Recipe.objects.filter(in_favorites__user=user)
+        return Recipe.objects.all()
+
+    def get_is_in_shopping_cart(self, queryset, name, value):
+        user = self.request.user
+        if value:
+            return Recipe.objects.filter(in_purchases__user=user)
+        return Recipe.objects.all()

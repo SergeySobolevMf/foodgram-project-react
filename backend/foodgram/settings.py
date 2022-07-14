@@ -27,20 +27,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'django_filters',
-    'rest_auth',
     'rest_framework.authtoken',
-    # 'dj_rest_auth',
+    'djoser',
+    'corsheaders',
+    'django_filters',
     'users.apps.UserConfig',
     'recipe.apps.RecipeConfig',
     'django.contrib.sites',
-    'allauth',
-    'allauth.account',
 ]
-REST_AUTH_SERIALIZERS = {'TOKEN_SERIALIZER': 'users.serializers.TokenSerializer',
-                         'LOGIN_SERIALIZER': 'users.serializers.CustomLoginSerializer',
-                         }
-SITE_ID=1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -52,20 +47,16 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
-# REST_USE_JWT = True
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 6,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend'
-    ],
+        'django_filters.rest_framework.DjangoFilterBackend'],
     # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
+    #     'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     # ],
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework.authentication.TokenAuthentication',
-    # )
 }
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
