@@ -1,21 +1,20 @@
 from urllib import response
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect
-from rest_framework import status, serializers, viewsets
+from djoser.views import UserViewSet
+from rest_auth.views import LoginView
+from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from djoser.views import UserViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_auth.views import LoginView
-from django.core.exceptions import ObjectDoesNotExist
-from .pagination import LimitPageNumberPagination
-
 
 from .models import CustomUser, Follow
-from .serializers import (CustomUserCreateSerializer,
-                          CustomUserSerializer,
-                          FollowSerializer,)
+from .pagination import LimitPageNumberPagination
+from .serializers import (CustomUserCreateSerializer, CustomUserSerializer,
+                          FollowSerializer)
 
 
 class CustomUserList(viewsets.ModelViewSet):

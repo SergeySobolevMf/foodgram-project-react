@@ -1,14 +1,13 @@
-from rest_framework import serializers
-from drf_extra_fields.fields import Base64ImageField
 from django.db.models import F
-from .models import (FavoriteRecipe, 
-                     IngridientAmount, 
-                     Ingridient, 
-                     Recipe,
-                     ShoppingList, 
-                     Tag)
-from djoser.serializers import (UserSerializer)
+from djoser.serializers import UserSerializer
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+
 from users.models import CustomUser
+
+from .models import (FavoriteRecipe, Ingridient, IngridientAmount, Recipe,
+                     ShoppingList, Tag)
+
 
 class CustomUserSerializer(UserSerializer):
 

@@ -1,9 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import (TagList,
-                    IngridientList,
-                    RecipeList)
+from .views import IngridientList, RecipeList, TagList
 
 app_name = 'foodgram'
 

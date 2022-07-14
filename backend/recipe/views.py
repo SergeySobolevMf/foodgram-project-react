@@ -1,21 +1,20 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import BooleanField, Exists, OuterRef, Value
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
-from rest_framework.pagination import PageNumberPagination
 from django.http import HttpResponse
-from rest_framework.response import Response
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.response import Response
+
 from users.models import CustomUser
-from .permissions import AdminOrReadOnly, AdminUserOrReadOnly
+
 from .filters import RecipeFilter
-from .models import Ingridient, Recipe, Tag, ShoppingList, FavoriteRecipe
-from .serializers import (TagSerializer, 
-                          IngridientSerializer,
-                          RecipeReadSerializer,
-                          RecipeWriteSerializer,
-                          ShortRecipeSerializer, 
+from .models import FavoriteRecipe, Ingridient, Recipe, ShoppingList, Tag
+from .permissions import AdminOrReadOnly, AdminUserOrReadOnly
+from .serializers import (IngridientSerializer, RecipeReadSerializer,
+                          RecipeWriteSerializer, ShortRecipeSerializer,
                           TagSerializer)
 
 
@@ -72,7 +71,8 @@ class RecipeList(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         return self.add_obj(FavoriteRecipe, request.user, pk)
 
-    @favorite.mapping.delete
+    @action(detail=True, methods=['post'],
+            permission_classes=[IsAuthenticated])
     def del_from_favorite(self, request, pk=None):
         return self.delete_obj(FavoriteRecipe, request.user, pk)
 
@@ -81,7 +81,8 @@ class RecipeList(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         return self.add_obj(ShoppingList, request.user, pk)
 
-    @shopping_cart.mapping.delete
+    @action(detail=True, methods=['post'],
+            permission_classes=[IsAuthenticated])
     def del_from_shopping_cart(self, request, pk=None):
         return self.delete_obj(ShoppingList, request.user, pk)
 

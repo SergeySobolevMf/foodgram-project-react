@@ -1,14 +1,13 @@
+from djoser.serializers import UserCreateSerializer, UserSerializer
+from drf_extra_fields.fields import Base64ImageField
 from pkg_resources import require
 from rest_framework import serializers
-from djoser.serializers import (UserCreateSerializer, 
-                                UserSerializer)
-from drf_extra_fields.fields import Base64ImageField
 from rest_framework.validators import UniqueValidator
 
-from .models import Follow, CustomUser
 from recipe.models import Recipe
 from recipe.serializers import ShortRecipeSerializer
 
+from .models import CustomUser, Follow
 
 
 class CustomUserSerializer(UserSerializer):
