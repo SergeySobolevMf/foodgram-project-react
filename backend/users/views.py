@@ -21,11 +21,6 @@ class CustomUserList(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     pagination_class = PageNumberPagination
 
-    # def get_permissions(self):
-    #     if self.action in ['list', 'create', 'retrieve']:
-    #         permission_classes = [AllowAny]
-    #     return [permission() for permission in permission_classes]
-
     def get_serializer_class(self):
         if self.action == 'create':
             return CustomUserCreateSerializer
@@ -90,20 +85,6 @@ class CustomUserList(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class MyLoginView(LoginView):
-    def get_response_serializer(self):
-        return TokenSerializer
-
-
-class Logout(APIView):
-    def get(self, request, format=None):
-        try:
-            request.user.auth_token.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except ObjectDoesNotExist:
-            return redirect('/api/auth/token/login/')
-
-
 class FollowViewSet(UserViewSet):
     pagination_class = LimitPageNumberPagination
 
@@ -111,7 +92,7 @@ class FollowViewSet(UserViewSet):
         methods=['post'], detail=True, permission_classes=[IsAuthenticated])
     def subscribe(self, request, id=None):
         user = request.user
-        author = get_object_or_404(User, id=id)
+        author = get_object_or_404(CustomUser, id=id)
 
         if user == author:
             return Response({
@@ -127,11 +108,13 @@ class FollowViewSet(UserViewSet):
             follow, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
 
-    @subscribe.mapping.delete
+    @action(
+        methods=['post'], detail=True, permission_classes=[IsAuthenticated])
     def del_subscribe(self, request, id=None):
         user = request.user
-        author = get_object_or_404(User, id=id)
+        author = get_object_or_404(CustomUser, id=id)
         if user == author:
             return Response({
                 'errors': 'Ошибка отписки, нельзя отписываться от самого себя'
