@@ -1,6 +1,24 @@
 from django.contrib import admin
 
-from .models import Ingridient, Recipe, Tag
+from .models import (FavoriteRecipe, 
+                     Ingredient,
+                     IngredientAmount,
+                     Recipe, 
+                     Tag)
+
+
+class FavoriteRecipeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'recipe', 'user', 'date_added')
+
+
+class IngredientAmountAdmin(admin.ModelAdmin):
+    list_display = (
+        'ingredient',
+        'recipe',
+        'amount'
+    )
+    list_filter = ('ingredient', 'recipe', 'amount')
+    empty_value_display = '-----'
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -28,7 +46,7 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.favorites.count()
 
 
-class IngridientAdmin(admin.ModelAdmin):
+class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name_ing',
@@ -41,6 +59,15 @@ class IngridientAdmin(admin.ModelAdmin):
         return obj.favorites.count()
 
 
-admin.site.register(Ingridient, IngridientAdmin)
+class ShoppingAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'recipe',
+        'date_added'
+    )
+
+admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(IngredientAmount, IngredientAmountAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag, TagAdmin)
+admin.site.register(FavoriteRecipe, FavoriteRecipeAdmin)

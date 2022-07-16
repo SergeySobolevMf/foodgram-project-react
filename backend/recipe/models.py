@@ -28,7 +28,7 @@ class Tag(models.Model):
         return self.name
 
 
-class Ingridient(models.Model):
+class Ingredient(models.Model):
     name_ing = models.CharField(
         max_length=100,
         verbose_name='Название ингредиента'
@@ -57,8 +57,8 @@ class Recipe(models.Model):
         verbose_name='Описание',
         help_text='Добавьте описание рецепта')
     ingredients = models.ManyToManyField(
-        Ingridient,
-        through='IngridientAmount',
+        Ingredient,
+        through='IngredientAmount',
         related_name='ingredients',
         verbose_name='Ингредиенты',
     )
@@ -79,9 +79,9 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
 
 
-class IngridientAmount(models.Model):
-    ingridient = models.ForeignKey(
-        Ingridient,
+class IngredientAmount(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент в рецепте',
         related_name='ingredients_in_recipe'
@@ -149,6 +149,10 @@ class ShoppingList(models.Model):
 
     class Meta:
         verbose_name = 'Покупки'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe'],
+                                    name='unique_shopping')
+        ]
 
     def __str__(self):
         return f'{self.user} купил:{self.recipe}'

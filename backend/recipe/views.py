@@ -2,26 +2,24 @@ from django.db.models import BooleanField, Exists, OuterRef, Value
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
-from rest_framework.response import Response
-
-from users.models import CustomUser
 
 from .filters import RecipeFilter
-from .models import FavoriteRecipe, Ingridient, Recipe, ShoppingList, Tag
-from .permissions import AdminOrReadOnly, AdminUserOrReadOnly
-from .serializers import (IngridientSerializer, RecipeReadSerializer,
-                          RecipeWriteSerializer, ShortRecipeSerializer,
+from .models import FavoriteRecipe, Ingredient, Recipe, ShoppingList, Tag
+from .permissions import AdminOrReadOnly
+from .serializers import (IngredientSerializer, 
+                          RecipeReadSerializer,
+                          RecipeWriteSerializer,
                           TagSerializer)
 
 
-class IngridientList(viewsets.ModelViewSet):
+class IngredientList(viewsets.ModelViewSet):
     permission_classes = (AdminOrReadOnly,)
-    queryset = Ingridient.objects.all()
-    serializer_class = IngridientSerializer
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
     filter_backends = (DjangoFilterBackend,)
     search_fields = ('^name',)
 

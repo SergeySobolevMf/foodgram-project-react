@@ -1,14 +1,14 @@
 import django_filters as filters
 from django_filters.widgets import BooleanWidget
 
-from .models import Ingridient, Recipe
+from .models import Ingredient, Recipe
 
 
 class IngredientNameFilter(filters.FilterSet):
     name = filters.CharFilter(field_name='name', lookup_expr='istartswith')
 
     class Meta:
-        model = Ingridient
+        model = Ingredient
         fields = ('name', 'measurement_unit')
 
 

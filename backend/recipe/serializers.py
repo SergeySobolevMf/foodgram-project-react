@@ -4,8 +4,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from users.models import CustomUser
-
-from .models import (FavoriteRecipe, Ingridient, IngridientAmount, Recipe,
+from .models import (FavoriteRecipe, Ingredient, IngredientAmount, Recipe,
                      ShoppingList, Tag)
 
 
@@ -30,26 +29,23 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'recipe', 'user', 'date_added')
 
 
-class IngridientSerializer(serializers.ModelSerializer):
+class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Ingridient
+        model = Ingredient
         fields = ('id', 'name_ing', 'measurement_unit',)
 
 
-class IngridientAmountSerializer(serializers.ModelSerializer):
+class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
-        source='ingridient.measurement_unit'
+        source='Ingredient.measurement_unit'
     )
 
     class Meta:
-        model = IngridientAmount
+        model = IngredientAmount
         fields = ('id', 'name', 'measurement_unit', 'amount',)
-
-
-
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -105,7 +101,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         ingredients_set = set()
         for ingredient in ingredients:
-            if type(ingredient.get('amount')) == str:
+            if isinstance(ingredient.get('amount'), str):
                 if not ingredient.get('amount').isdigit():
                     raise serializers.ValidationError(
                         ('Количество ингредиента дольжно быть числом')
@@ -130,7 +126,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             instance.tags.add(tag)
 
         for ingredient in ingredients:
-            IngridientAmount.objects.create(
+            IngredientAmount.objects.create(
                 recipe=instance,
                 ingredients_id=ingredient.get('id'),
                 amount=ingredient.get('amount'))

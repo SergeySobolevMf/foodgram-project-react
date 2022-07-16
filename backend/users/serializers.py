@@ -1,12 +1,9 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from drf_extra_fields.fields import Base64ImageField
-from pkg_resources import require
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from recipe.models import Recipe
 from recipe.serializers import ShortRecipeSerializer
-
 from .models import CustomUser, Follow
 
 
@@ -60,8 +57,10 @@ class FollowSerializer(serializers.ModelSerializer):
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
-
+    recipes_count = serializers.IntegerField(
+        source='recipes.count', 
+        read_only=True
+        )
     class Meta:
         model = Follow
         fields = (
@@ -90,6 +89,3 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()
-
-
-
