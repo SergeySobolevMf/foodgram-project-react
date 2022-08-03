@@ -25,7 +25,7 @@ class TagAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
-        'color_code',
+        'color',
         'slug',
     )
     list_filter = ('name', 'slug')
@@ -35,24 +35,24 @@ class TagAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'title',
+        'name',
         'author',
         'is_favorite'
     )
-    list_filter = ('author', 'title', 'tags')
+    list_filter = ('author', 'name', 'tags')
     empty_value_display = '-----'
 
     def is_favorite(self, obj):
-        return obj.favorites.count()
+        return obj.favorite_recipes.count()
 
 
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'name_ing',
+        'name',
         'measurement_unit'
     )
-    list_filter = ('name_ing', 'measurement_unit',)
+    list_filter = ('name', 'measurement_unit',)
     empty_value_display = '-----'
 
     def is_favorite(self, obj):

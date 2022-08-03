@@ -5,10 +5,9 @@ from api.views import FollowViewSet
 
 router = DefaultRouter()
 
-router.register('users', FollowViewSet)
+router.register('users', FollowViewSet, basename='users')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api/', include('djoser.urls')),
+    path('api/', include(router.urls)),
     path('api/auth/', include('djoser.urls.authtoken')),
 ]

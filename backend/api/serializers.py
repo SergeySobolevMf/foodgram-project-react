@@ -20,7 +20,7 @@ class CustomUserSerializer(UserSerializer):
         fields = (
             'email',
             'id',
-            'username',
+            'user',
             'first_name',
             'last_name',
             'is_subscribed'
@@ -37,7 +37,7 @@ class CustomUserSerializer(UserSerializer):
 class CustomUserCreateSerializer(UserCreateSerializer):
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=CustomUser.objects.all())])
-    username = serializers.CharField(
+    user = serializers.CharField(
         validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -48,7 +48,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             'email',
             'id',
             'password',
-            'username',
+            'user',
             'first_name',
             'last_name'
         )
@@ -57,7 +57,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
-    username = serializers.ReadOnlyField(source='author.username')
+    user = serializers.ReadOnlyField(source='author.user')
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
@@ -71,7 +71,7 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = (
             'email',
             'id',
-            'username',
+            'user',
             'first_name',
             'last_name',
             'is_subscribed',
@@ -113,7 +113,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ('id', 'name_ing', 'measurement_unit',)
+        fields = ('id', 'name', 'measurement_unit',)
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):

@@ -16,7 +16,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='key'),
 DEFAULT_FROM_EMAIL = 'noreply@foodgram.com'
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -31,18 +31,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'corsheaders',
     'django_filters',
     'users.apps.UserConfig',
     'recipe.apps.RecipeConfig',
-    'django.contrib.sites',
+    'api'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -63,16 +62,16 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    'HIDE_USERS': False,
-    'SERIALIZERS': {
-        'user_create': 'api.serializers.CustomUserCreateSerializer',
-        'user': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
-    },
-    'PERMISSIONS': {
-        'user': ('rest_framework.permissions.IsAuthenticated',),
-        'user_list': ('rest_framework.permissions.AllowAny',)
-    }
+    # 'HIDE_USERS': False,
+    # 'SERIALIZERS': {
+    #     'user_create': 'api.serializers.CustomUserCreateSerializer',
+    #     'user': 'api.serializers.CustomUserSerializer',
+    #     'current_user': 'api.serializers.CustomUserSerializer',
+    # },
+    # 'PERMISSIONS': {
+    #     'user': ('rest_framework.permissions.IsAuthenticated',),
+    #     'user_list': ('rest_framework.permissions.AllowAny',)
+    # }
 }
 
 
@@ -152,3 +151,6 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
