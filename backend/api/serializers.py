@@ -5,7 +5,7 @@ from recipe.models import (FavoriteRecipe, Ingredient, IngredientAmount,
                            Recipe, Tag)
 from rest_framework import serializers
 from users.models import CustomUser, Follow
-from backend.recipe.models import ShoppingList
+from recipe.models import ShoppingList
 
 
 class UserCreateSerializer(UserCreateSerializer):
