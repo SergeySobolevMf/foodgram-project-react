@@ -1,7 +1,7 @@
-from django.contrib.auth import get_user_model
-from django.db.models import BooleanField, Exists, OuterRef, Value
 from django.shortcuts import get_object_or_404
+from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
+from django.http.response import HttpResponse
 from djoser.views import UserViewSet
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -10,17 +10,27 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import RecipeFilter
-from recipe.models import FavoriteRecipe, Ingredient, Recipe, ShoppingList, Tag
+from recipe.models import (FavoriteRecipe,
+                           Ingredient,
+                           IngredientAmount,
+                           Recipe,
+                           ShoppingList,
+                           Tag)
 from .permissions import AdminOrReadOnly
 from .serializers import (IngredientSerializer, 
                           RecipeReadSerializer,
                           RecipeWriteSerializer,
-                          ShortRecipeSerializer,
                           TagSerializer)
 from users.models import CustomUser, Follow
 from users.pagination import LimitPageNumberPagination
 from .serializers import (CustomUserCreateSerializer, CustomUserSerializer,
                           FollowSerializer)
+from .delsave import obj_create, obj_delete
+
+UNDETECTED = 'Рецепта нет в избранном!'
+ERROR_FAVORITE = 'Рецепт уже есть в избранном!'
+NOT_ON_LIST = 'В списке нет рецепта, который вы хотите удалить!'
+ERROR_ON_LIST = 'Рецепт уже в списке!'
 
 User = CustomUser
 
@@ -100,70 +110,57 @@ class RecipeList(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
-    def add_obj(self, model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({
-                'errors': 'Ошибка добавления рецепта в список'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        recipe = get_object_or_404(Recipe, id=pk)
-        model.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def delete_obj(self, model, user, pk):
-        obj = model.objects.filter(user=user, recipe__id=pk)
-        if obj.exists():
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({
-            'errors': 'Объекта не существует'
-        }, status=status.HTTP_400_BAD_REQUEST)
-
     def get_serializer_class(self):
-        if self.request.method in SAFE_METHODS:
+        if self.request.method == 'GET':
             return RecipeReadSerializer
         return RecipeWriteSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Recipe.objects.all()
+    @action(
+        methods=['POST', 'DELETE'],
+        permission_classes=[IsAuthenticated], detail=True
+    )
+    def favorite(self, request, pk):
+        user = request.user
+        model = FavoriteRecipe
+        if request.method == 'POST':
+            return obj_create(user, model, pk=pk, message=ERROR_FAVORITE)
+        if request.method == 'DELETE':
+            return obj_delete(user, model, pk=pk, message=UNDETECTED)
 
-        if user.is_authenticated:
-            queryset = queryset.annotate(
-                is_favorited=Exists(FavoriteRecipe.objects.filter(
-                    user=user, recipe__pk=OuterRef('pk'))
-                ),
-                is_in_shopping_cart=Exists(ShoppingList.objects.filter(
-                    user=user, recipe__pk=OuterRef('pk'))
-                )
-            )
-        else:
-            queryset = queryset.annotate(
-                is_favorited=Value(False, output_field=BooleanField()),
-                is_in_shopping_cart=Value(False, output_field=BooleanField())
-            )
-        return queryset
+    @action(
+        methods=['POST', 'DELETE'],
+        permission_classes=[IsAuthenticated], detail=True
+    )
+    def shopping_cart(self, request, pk):
+        user = request.user
+        model = ShoppingList
+        if request.method == 'POST':
+            return obj_create(user, model, pk=pk, message=ERROR_ON_LIST)
+        if request.method == 'DELETE':
+            return obj_delete(user, model, pk=pk, message=NOT_ON_LIST)
 
-    @action(detail=True, methods=['post'],
-            permission_classes=[IsAuthenticated])
-    def favorite(self, request, pk=None):
-        return self.add_obj(FavoriteRecipe, request.user, pk)
+    @action(
+        detail=False,
+        methods=['GET'],
+        permission_classes=[IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        ingredients = IngredientAmount.objects.filter(
+            recipe__in_purchases__user=request.user).values(
+            'ingredient__name',
+            'ingredient__measurement_unit').annotate(total=Sum('amount'))
 
-    @action(detail=True, methods=['post'],
-            permission_classes=[IsAuthenticated])
-    def del_from_favorite(self, request, pk=None):
-        return self.delete_obj(FavoriteRecipe, request.user, pk)
-
-    @action(detail=True, methods=['post'],
-            permission_classes=[IsAuthenticated])
-    def shopping_cart(self, request, pk=None):
-        return self.add_obj(ShoppingList, request.user, pk)
-
-    @action(detail=True, methods=['post'],
-            permission_classes=[IsAuthenticated])
-    def del_from_shopping_cart(self, request, pk=None):
-        return self.delete_obj(ShoppingList, request.user, pk)
-
+        shopping_cart = '\n'.join([
+            f'{ingredient["ingredient__name"]} - {ingredient["total"]} '
+            f'{ingredient["ingredient__measurement_unit"]}'
+            for ingredient in ingredients
+        ])
+        filename = 'shopping_cart.txt'
+        response = HttpResponse(shopping_cart, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
