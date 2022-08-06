@@ -110,13 +110,13 @@ class FavoriteRecipe(models.Model):
     user = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='favorites',
+        related_name='favorite_recipes',
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='favorite_recipes'
+        related_name='in_favorites'
     )
     date_added = models.DateTimeField(
         auto_now_add=True,
@@ -128,20 +128,20 @@ class FavoriteRecipe(models.Model):
         verbose_name = 'Избранные'
         constraints = [
             models.UniqueConstraint(fields=['user', 'recipe'],
-                                    name='unique_favorites_recipes')
+                                    name='unique_favorites')
         ]
 
 
 class ShoppingList(models.Model):
     user = models.ForeignKey(
         CustomUser,
-        related_name='user_shopping_lists',
+        related_name='purchases_recipes',
         on_delete=models.CASCADE,
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
-        related_name='purchases',
+        related_name='in_purchases',
         on_delete=models.CASCADE,
         verbose_name='Покупка'
     )
