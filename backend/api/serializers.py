@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipe.models import (FavoriteRecipe, Ingredient, IngredientAmount,
+from recipe.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
                            Recipe, Tag)
 from rest_framework import serializers
 from users.models import CustomUser, Follow
@@ -131,7 +131,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = IngredientAmount
+        model = IngredientInRecipe
         fields = ('id', 'name', 'measurement_unit', 'amount',)
 
 
@@ -158,7 +158,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
 
     def get_ingredients(self, obj):
-        objects = IngredientAmount.objects.filter(recipe=obj)
+        objects = IngredientInRecipe.objects.filter(recipe=obj)
         serializer = IngredientAmountSerializer(objects, many=True)
         return serializer.data
 
@@ -247,7 +247,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 id=ingredient['id']
             )
             amount = ingredient['amount']
-            IngredientAmount.objects.create(
+            IngredientInRecipe.objects.create(
                 ingredient=ingredient_model,
                 recipe=recipe,
                 amount=amount
@@ -266,7 +266,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         ingredient_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
-        IngredientAmount.objects.filter(recipe=instance).delete()
+        IngredientInRecipe.objects.filter(recipe=instance).delete()
         self.ingredient_create(ingredient_data, instance)
         super(RecipeWriteSerializer, self).update(instance, validated_data)
         instance.tags.set(tags_data)

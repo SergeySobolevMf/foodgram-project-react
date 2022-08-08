@@ -1,7 +1,10 @@
-from django.contrib.auth import get_user_model
+from distutils.log import ERROR
+from django.core.validators import MinValueValidator
 from django.db import models
 from users.models import CustomUser
 
+
+ERROR_ = 'Значение должно быть больше нуля'
 
 class Tag(models.Model):
     name = models.CharField(
@@ -50,17 +53,17 @@ class Recipe(models.Model):
         default=None)
     author = models.ForeignKey(
         CustomUser,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     image = models.ImageField(
-        upload_to='media/',
+        upload_to='recipe_image',
         verbose_name='Фото блюда')
     text = models.TextField(
         verbose_name='Описание',
         help_text='Добавьте описание рецепта')
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngredientAmount',
+        through='IngredientInRecipe',
         related_name='ingredients',
         verbose_name='Ингредиенты',
     )
@@ -81,22 +84,23 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
 
 
-class IngredientAmount(models.Model):
+class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='recipes_ingredients_list'
+        related_name='ingredient_amount'
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент в рецепте',
-        related_name='ingredients_in_recipe'
+        related_name='ingredient_amount'
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество ингредиентов',
         default=1,
+        validators=[MinValueValidator(1, message=ERROR_)]
     )
 
     class Meta:

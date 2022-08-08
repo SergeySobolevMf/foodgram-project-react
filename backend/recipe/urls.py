@@ -1,11 +1,11 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 
 from api.views import IngredientList, RecipeList, TagList
 
 app_name = 'foodgram'
 
-router = DefaultRouter()
+router = SimpleRouter()
 
 
 router.register('ingredients', IngredientList, basename='ingredients')

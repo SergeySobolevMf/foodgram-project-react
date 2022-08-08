@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from .filters import RecipeFilter
 from recipe.models import (FavoriteRecipe,
                            Ingredient,
-                           IngredientAmount,
+                           IngredientInRecipe,
                            Recipe,
                            ShoppingList,
                            Tag)
@@ -214,7 +214,7 @@ class RecipeList(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        ingredients = IngredientAmount.objects.filter(
+        ingredients = IngredientInRecipe.objects.filter(
             recipe__in_purchases__user=request.user).values(
             'ingredient__name',
             'ingredient__measurement_unit').annotate(total=Sum('amount'))
