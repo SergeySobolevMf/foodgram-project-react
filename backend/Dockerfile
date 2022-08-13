@@ -1,13 +1,6 @@
-FROM python:3.7-slim
-
-WORKDIR /foodgram
-
-
-COPY requirements.txt /foodgram
-
-RUN pip3 install -r /foodgram/requirements.txt --no-cache-dir
-
-COPY . /foodgram
-
-
-CMD ["gunicorn", "foodgram.wsgi:application", "--bind", "0:8000" ] 
+FROM python:3.8.10
+WORKDIR /code
+COPY ./ .
+RUN python -m pip install --upgrade pip && pip install -r requirements.txt
+RUN python manage.py collectstatic --noinput
+CMD gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000

@@ -1,146 +1,99 @@
 import os
+from pathlib import Path
 
-from dotenv import load_dotenv
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "key"
+)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 15_728_640
+DEBUG = False
 
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-
-
-
-SECRET_KEY = os.getenv('SECRET_KEY', default='key'),
-
-DEFAULT_FROM_EMAIL = 'noreply@foodgram.com'
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
-
-
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "backend", "51.250.17.112"]
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'djoser',
-    'django_filters',
-    'users.apps.UserConfig',
-    'recipe.apps.RecipeConfig',
-    'api'
+    "users",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_filters",
+    "sorl.thumbnail",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "djoser",
+    "recipes",
+    "colorfield",
+    "api",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'foodgram.urls'
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-    ),
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ],
-}
-
-DJOSER = {
-    'LOGIN_FIELD': 'email',
-    # 'HIDE_USERS': False,
-    # 'SERIALIZERS': {
-    #     'user_create': 'api.serializers.CustomUserCreateSerializer',
-    #     'user': 'api.serializers.CustomUserSerializer',
-    #     'current_user': 'api.serializers.CustomUserSerializer',
-    # },
-    # 'PERMISSIONS': {
-    #     'user': ('rest_framework.permissions.IsAuthenticated',),
-    #     'user_list': ('rest_framework.permissions.AllowAny',)
-    # }
-}
-
-
-
+ROOT_URLCONF = "foodgram.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'foodgram.wsgi.application'
-
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', default='postgres'),
-        'USER': os.getenv('POSTGRES_USER', default='postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('DB_HOST', ),
-        'PORT': os.getenv('DB_PORT', default=5432)
+WSGI_APPLICATION = "foodgram.wsgi.application"
+if os.environ.get("DB_ENGINE") == "django.db.backends.postgresql":
+    DATABASES = {
+        "default": {
+            "ENGINE": os.environ.get("DB_ENGINE"),
+            "NAME": os.environ.get("DB_NAME", "postgres"),
+            "USER": os.environ.get("POSTGRES_USER", "postgres"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
+            "HOST": os.environ.get("DB_HOST", "db"),
+            "PORT": os.environ.get("DB_PORT", 5432),
+        }
     }
-}
-
-
-AUTH_USER_MODEL = 'users.CustomUser'
-
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR.parent / "db.sqlite3",
+        }
+    }
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",  # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",  # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",  # noqa
     },
 ]
 
+LANGUAGE_CODE = "ru-ru"
 
-
-
-LANGUAGE_CODE = 'ru-ru'
-
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 
@@ -149,8 +102,47 @@ USE_L10N = True
 USE_TZ = True
 
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+
+ITEMS_PER_PAGE = 6
+
+
+REST_FRAMEWORK = {
+    "COERCE_DECIMAL_TO_STRING": False,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend"
+    ],
+    "DEFAULT_PAGINATION_CLASS": "api.pagination.CustomPageNumberPagination",
+    "PAGE_SIZE": ITEMS_PER_PAGE,
+}
+
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "HIDE_USERS": False,
+    "SERIALIZERS": {
+        "user_create": "api.serializers.UserRegistrationSerializer",
+        "user": "api.serializers.CustomUserSerializer",
+        "current_user": "api.serializers.CustomUserSerializer",
+    },
+    "PERMISSIONS": {
+        "user_list": ["rest_framework.permissions.AllowAny"],
+        "user": ["rest_framework.permissions.IsAuthenticated"],
+    },
+}
+
+
+MEDIA_URL = "/backend_media/"
+MEDIA_ROOT = BASE_DIR / "backend_media"
+STATIC_URL = "/backend_static/"
+STATIC_ROOT = BASE_DIR / "backend_static/"
+
+AUTH_USER_MODEL = "users.User"
+
+if os.environ.get("ENV_NAME") == "development":
+    DEBUG = True

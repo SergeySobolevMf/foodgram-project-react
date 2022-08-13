@@ -1,29 +1,31 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser, Follow
+from .forms import CustomUserCreationForm
 
-
-class CustomUserAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'username',
-        'email',
-        'first_name',
-        'last_name',
-        'email',
-        'password')
-    list_filter = ('email', 'username',)
+User = get_user_model()
 
 
-class FollowAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'user',
-        'author',
+class CustomUserAdmin(UserAdmin):
+    add_form = CustomUserCreationForm
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "email",
+                    "username",
+                    "first_name",
+                    "last_name",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
     )
-    list_filter = ('user', 'author',)
-    empty_value_display = '-----'
+    list_filter = ("email", "username")
 
 
-admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Follow, FollowAdmin)
+admin.site.register(User, CustomUserAdmin)

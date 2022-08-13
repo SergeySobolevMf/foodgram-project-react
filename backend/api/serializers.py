@@ -1,26 +1,38 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework import serializers, validators
 from drf_extra_fields.fields import Base64ImageField
-from recipe.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
-                           Recipe, Tag)
-from rest_framework import serializers
+from decimal import Decimal
+
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    IngredientForRecipe,
+    Purchase,
+    Recipe,
+    Tag,
+    Follow
+)
+
 from users.models import CustomUser, Follow
-from recipe.models import ShoppingList
 
 
-class UserCreateSerializer(UserCreateSerializer):
-    username = serializers.CharField()
+
+User = get_user_model()
+
+
+class UserRegistrationSerializer(UserCreateSerializer):
 
     class Meta:
         fields = (
             'email',
-            'id',
             'username',
             'first_name',
             'last_name',
             'password'
         )
-        model = CustomUser
+        model = User
 
     def validate_username(self, value):
         if value == 'me':
