@@ -1,4 +1,9 @@
 # Учебный проект на Django + DRF.
+## Админка
+IP 51.250.17.112
+Login: Admin
+email: serg2010sob@gmail.com
+pass: 123456789
 ## Цель проекта построить REST API.
 #### Для запуска проекта с помощью Docker:
 Из корневой директории склонированного проекта выполнить:
@@ -11,8 +16,8 @@ cd infra
 ```.env
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=postgres # имя базы данных
-POSTGRES_USER=postgres # логин для подключения к базе данных
-POSTGRES_PASSWORD=postgres # пароль для подключения к БД. Можно указать свой
+POSTGRES_USER=postgres4 # логин для подключения к базе данных
+POSTGRES_PASSWORD=postgres4 # пароль для подключения к БД. Можно указать свой
 DB_HOST=db # название сервиса (контейнера)
 DB_PORT=5432 # TCP порт для подключения к БД
 ```
