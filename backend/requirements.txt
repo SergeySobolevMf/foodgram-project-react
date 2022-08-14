@@ -19,3 +19,4 @@ django-rest-auth==0.9.5
 django-allauth==0.51.0
 djoser==2.1.0
 drf-extra-fields==3.2.1
+sorl-thumbnail
